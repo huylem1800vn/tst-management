@@ -1,0 +1,49 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+include ../../mixins/select-tree.pug
+include ../../mixins/tree-index.pug
+
+block main
+  if(role.permissions.includes("products-category_view"))
+    +alert-success()
+
+    h1(class="mb-4") Danh mục sản phẩm
+
+    .card.mb-3
+      .card-header Danh sách
+      .card-body
+        .row
+          .col-8
+          .col-4.text-right
+            if(role.permissions.includes("products-category_create"))
+              a(
+                href=`/${prefixAdmin}/products-category/create`
+                class="btn btn-outline-success"
+              ) + Thêm mới
+        
+        table(
+          class="table table-hover table-sm"
+        )
+          thead
+            tr
+              th STT
+              th Hình ảnh
+              th Tiêu đề
+              th Vị trí
+              th Trạng thái
+              th Hành động
+
+          tbody
+            if(records)
+              +tree-index(records)
+  else 
+    h1 Không có quyền truy cập
+
+  //- Form xóa ẩn
+  form(
+    method="POST"
+    form-delete-product-category-item
+    data-path=`/${prefixAdmin}/products-category/delete`
+    style="display: none;"
+  )
+    input(type="hidden" name="_method" value="DELETE")

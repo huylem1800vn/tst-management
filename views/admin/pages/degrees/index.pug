@@ -1,0 +1,54 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+include ../../mixins/pagination.pug
+include ../../mixins/search.pug
+
+
+
+block main
+  +alert-success()
+  +alert-error()
+  
+  .container.my-3
+    .row 
+      a(
+        href=`/${prefixAdmin}/degrees/create`
+        class="btn btn-outline-success"
+      ) + Thêm mới
+
+    .row
+      table.table.table-bordered
+        thead
+          tr
+            th Số Quyết định
+            th Họ tên
+            th Đơn vị
+            th Chương trình / Cuộc thi
+            th Thời gian cấp
+            th Hành động
+        tbody
+          each degree in degrees
+            tr
+              td= degree.degreeCode
+              td= degree.fullName
+              td= degree.unit
+              td= degree.program
+              td= new Date(degree.issueDate).toLocaleDateString('vi-VN')
+              td
+                a(
+                  href=`/${prefixAdmin}/degrees/edit/${degree.id}`
+                  class="btn btn-warning btn-sm"
+                ) Sửa
+                button(
+                  class="btn btn-danger btn-sm ml-1"
+                  button-delete-degree 
+                  data-id=degree.id
+                ) Xóa
+
+  form(
+      form-delete-item-degree
+      method="POST"
+      action=""
+      data-path=`/${prefixAdmin}/degrees/delete`
+    )
+        

@@ -1,0 +1,29 @@
+
+
+header.header
+  .container
+    .row.align-items-center
+      .col-3
+        .inner-logo
+          a(href="/")
+            img(src=settingGeneral.logo, alt="Logo")
+      
+      .col-9
+        .inner-menu
+          ul.ml-auto
+            li
+              a(href="/") Trang chủ
+            li 
+              a(href="/searchDegree") Tra cứu chứng chỉ
+            if(user)
+              li 
+              a(href="/user/info") #{user.fullName}
+              li 
+              a(href="/user/logout") Đăng Xuất
+            else 
+              li 
+                a(href="/user/register") Đăng ký
+              li 
+                a(href="/user/login") Đăng nhập
+                  i(class="fa-solid fa-right-to-bracket")
+            

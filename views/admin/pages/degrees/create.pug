@@ -1,0 +1,35 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+include ../../mixins/select-tree.pug
+
+block main
+        +alert-error()
+        +alert-success()
+
+        .container.my-3
+                h1.text-center.mb-4 Tạo Mới Bằng Cấp
+
+        form(action="/admin/degrees/create" method="POST")
+                .form-group
+                        label(for="degreeCode") Mã chứng chỉ
+                        input#degreeCode.form-control(type="text", name="degreeCode", placeholder="Nhập mã chứng chỉ", required)
+
+                .form-group
+                        label(for="fullName") Họ tên
+                        input#fullName.form-control(type="text", name="fullName", placeholder="Nhập họ tên", required)
+
+                .form-group
+                        label(for="unit") Đơn vị
+                        input#unit.form-control(type="text", name="unit", placeholder="Nhập đơn vị", required)
+
+                .form-group
+                        label(for="program") Chương trình / Cuộc thi
+                        input#program.form-control(type="text", name="program", placeholder="Nhập chương trình hoặc cuộc thi", required)
+
+                .form-group
+                        label(for="issueDate") Thời gian cấp
+                        input#issueDate.form-control(type="date", name="issueDate", required)
+
+                button.btn.btn-success(type="submit") Tạo mới
+
+        

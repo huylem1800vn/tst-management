@@ -1,0 +1,10 @@
+mixin search (searchQuery, degreeCodeQuery) 
+    form(action="degree" method="get" class="mb-4")
+      .form-group
+        label(for="search") Họ tên:
+        input.form-control(type="text" name="search" placeholder="Nhập họ tên" value=searchQuery)
+      .form-group
+        label(for="degreeCode") Mã bằng cấp:
+        input.form-control(type="text" name="degreeCode" placeholder="Nhập mã bằng cấp" value=degreeCodeQuery)
+      button.btn.btn-primary(type="submit") Tìm kiếm
+                        

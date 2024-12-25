@@ -1,0 +1,45 @@
+extends ../../layouts/default.pug
+include ../../mixins/box-head.pug
+include ../../mixins/alert.pug
+include ../../mixins/pagination.pug
+
+block main
+  +alert-success()
+  +alert-error()
+  
+  .container.my-3
+    .row
+      .col-12
+        +box-head("Thông tin bằng cấp")
+    .row 
+      form(action="searchDegree" method="get" class="mb-4")
+        .form-group.d-flex
+          .mr-3
+            label(for="degreeCode") Số Quyết định:
+            input.form-control(type="text" name="degreeCode" placeholder="Nhập số quyết định" value=degreeCodeQuery)
+          .ml-3
+            label(for="issueDate") Ngày cấp:
+            input.form-control(type="date" name="issueDate" value=issueDateQuery)
+        .form-group
+          label(for="search") Họ tên:
+          input.form-control(type="text" name="search" placeholder="Nhập họ tên" value=searchQuery)
+        button.btn.btn-primary(type="submit") Tìm kiếm
+
+    .row
+      table.table.table-bordered
+        thead
+          tr
+            th Số Quyết định
+            th Họ tên
+            th Đơn vị
+            th Chương trình / Cuộc thi
+            th Thời gian cấp
+        tbody
+          each degree in degrees
+            tr
+              td= degree.degreeCode
+              td= degree.fullName
+              td= degree.unit
+              td= degree.program
+              td= new Date(degree.issueDate).toLocaleDateString('vi-VN')
+        
