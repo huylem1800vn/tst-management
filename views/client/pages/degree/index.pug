@@ -42,4 +42,7 @@ block main
               td= degree.unit
               td= degree.program
               td= new Date(degree.issueDate).toLocaleDateString('vi-VN')
-        
+    
+    .row
+      .col-12.d-flex.justify-content-center
+        +pagination(objectPagination)

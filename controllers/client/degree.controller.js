@@ -19,13 +19,16 @@ module.exports.searchDegree = async (req, res) => {
         const degreeCodeQuery = req.query.degreeCode?.trim() || ""; // Mã bằng cấp
         const issueDateQuery = req.query.issueDate?.trim() || ""; // Ngày cấp
 
+        
+
         // Nếu không có bất kỳ điều kiện nào, render kết quả rỗng
         if (!searchQuery && !degreeCodeQuery && !issueDateQuery) {
             return res.render("client/pages/degree/index", {
                 pageTitle: "Thông tin bằng cấp",
                 degrees: [],
                 searchQuery: "",
-                degreeCodeQuery: ""
+                degreeCodeQuery: "",
+                objectPagination: {}
             });
         }
 
@@ -35,7 +38,7 @@ module.exports.searchDegree = async (req, res) => {
         //     degreeCode: new RegExp(`^${degreeCodeQuery}$`, 'i') // Khớp chính xác mã bằng cấp
         // };
 
-        // Điều kiện tìm kiếm
+    
         const searchConditions = {};
 
         // Tìm theo họ tên
@@ -81,14 +84,18 @@ module.exports.searchDegree = async (req, res) => {
         // Pagination (Phân trang) 
         const countRecords = await Degree.countDocuments(searchConditions);
         // Đếm các document(mỗi bảng ghi là 1 document)
-        const objectPagination = paginationHelper(req, countRecords);
+        // Kiểm tra xem có kết quả tìm kiếm không, nếu có thì tính phân trang
+        let objectPagination = {};
+        if (countRecords > 0) {
+            objectPagination = paginationHelper(req, countRecords); // Chỉ tính phân trang khi có kết quả
+        }
         // End Pagination (Phân trang)
         // Truy vấn Mongodb để tìm kiếm bằng cấp 
         const degrees = await Degree
         .find(searchConditions)
-        // .limit(objectPagination.limitItems)
-        // .skip(objectPagination.skip)
-        // .sort({ position: "desc" });
+        .limit(objectPagination.limitItems)
+        .skip(objectPagination.skip)
+        .sort({ position: "desc" });
         // Nếu không tìm thấy kết quả
         if (degrees.length === 0) {
             req.flash("error", "Không tìm thấy thông tin bằng cấp khớp điều kiện tìm kiếm!");

@@ -1,7 +1,7 @@
 module.exports = (req, countRecords) => {
     const objectPagination = {
         currentPage: 1,
-        limitItems: 4,
+        limitItems: 10,
       }
     
       if(req.query.page) {
