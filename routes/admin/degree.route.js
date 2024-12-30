@@ -16,4 +16,8 @@ router.patch('/edit/:id', controller.editPatch);
 
 router.delete('/delete/:id', controller.deleteDegree);
 
+router.get('/import-database', controller.importDatabase);
+
+router.post('/import-database', controller.importDatabasePost);
+
 module.exports = router;

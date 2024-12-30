@@ -518,3 +518,12 @@ to {
 }
 }
 /* End Show Alert */
+
+/* Footer custom */
+.footer-custom {
+  background-color: #215578;
+  color: #ffffff; /* Màu chữ (nếu cần) để dễ đọc trên nền xanh */
+  padding: 15px;  /* Khoảng cách bên trong footer */
+  text-align: center; /* Căn giữa nội dung (nếu muốn) */
+}
+/* End Footer custom */

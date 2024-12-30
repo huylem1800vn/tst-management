@@ -9,4 +9,10 @@ block main
   .container.my-3
     .row
       .col-12
-        +box-head("")
+        +box-head("Chức năng")
+        .d-flex.justify-content-center.align-items-center.mt-4
+          .card.text-center.shadow-lg(style="max-width: 400px; border: none; background-color: #215578; color: #fff;")
+            .card-body
+              h5.card-title Tra cứu chứng nhận
+              p.card-text Tra cứu chứng nhận TST
+              a.btn.btn-light.btn-lg.mt-3(href="/searchDegree" style="color: #215578; font-weight: bold;") Tra cứu

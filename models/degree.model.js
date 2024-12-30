@@ -3,9 +3,9 @@ const mongoose = require("mongoose");
 const degreeSchema = new mongoose.Schema({
   degreeCode: { type: String, required: true },
   fullName: { type: String, required: true },
-  unit: String,
-  program: String,
-  issueDate: Date
+  unit: { type: String, required: true },
+  program: { type: String, required: true },
+  issueDate: { type: Date }
 }, 
 {
   timestamps: true,

@@ -3,6 +3,7 @@ const degreeRoutes = require("./degree.route");
 const dashboardRoutes = require("./dashboard.route");
 const authRoutes = require("./auth.route");
 const settingRoutes = require("./setting.route");
+const accountRoutes = require("./account.route");
 
 const settingMiddleware = require("../../middlewares/client/setting.middleware");
 const authMiddleware = require("../../middlewares/admin/auth.middlewares");
@@ -28,6 +29,12 @@ module.exports = (app) => {
         PATH_ADMIN + '/settings',
         authMiddleware.requireAuth, 
         settingRoutes
+    );
+
+    app.use(
+        PATH_ADMIN + '/accounts',
+        authMiddleware.requireAuth, 
+        accountRoutes
     );
 }
 

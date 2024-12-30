@@ -1,19 +1,82 @@
 const Degree = require("../../models/degree.model");
-const filterHelper = require("../../helpers/filter.helper");
 const paginationHelper = require("../../helpers/pagination.helper");
 const systemConfig = require("../../config/system");
 const moment = require("moment"); // Thư viện để xử lý ngày tháng
 
 // [GET] admin/degrees
 module.exports.index = async (req, res) => {
+    try {
+        // Lấy các query tìm kiếm
+        const searchQuery = req.query.search?.trim() || ""; // Họ tên
+        const degreeCodeQuery = req.query.degreeCode?.trim() || ""; // Số Quyết định
+        const issueDateQuery = req.query.issueDate?.trim() || ""; // Ngày cấp
 
-    const degrees = await Degree.find();
+        const searchConditions = {};
 
-    res.render("admin/pages/degrees/index", {
-        pageTitle: "Thông tin bằng cấp",
-        degrees: degrees
-    })
-}
+        // Tìm theo họ tên
+        if (searchQuery) {
+            searchConditions.fullName = new RegExp(searchQuery, 'i');
+        }
+
+        // Tìm theo số quyết định
+        if (degreeCodeQuery) {
+            searchConditions.degreeCode = new RegExp(degreeCodeQuery, 'i');
+        }
+
+        // Tìm theo ngày cấp
+        if (issueDateQuery) {
+            const startDate = new Date(issueDateQuery); // Đầu ngày
+            const endDate = new Date(issueDateQuery);
+            endDate.setUTCHours(23, 59, 59, 999); // Cuối ngày
+
+            searchConditions.issueDate = {
+                $gte: startDate,
+                $lte: endDate
+            };
+        }
+
+        // Đếm số lượng kết quả
+        const countRecords = await Degree.countDocuments(searchConditions);
+
+        // Pagination (Phân trang)
+        let objectPagination = {};
+        if (countRecords > 0) {
+            objectPagination = paginationHelper(req, countRecords);
+        }
+
+        // Lấy dữ liệu từ MongoDB
+        const degrees = await Degree
+            .find(searchConditions)
+            .limit(objectPagination.limitItems)
+            .skip(objectPagination.skip)
+            .sort({ _id: "desc" });
+
+        // Render dữ liệu ra view
+        res.render("admin/pages/degrees/index", {
+            pageTitle: "Thông tin bằng cấp",
+            degrees,
+            searchQuery,
+            degreeCodeQuery,
+            issueDateQuery,
+            objectPagination
+        });
+    } catch (error) {
+        console.error("Lỗi khi tìm kiếm bằng cấp:", error);
+        res.status(500).send("Có lỗi xảy ra, vui lòng thử lại sau.");
+    }
+};
+
+
+
+// module.exports.index = async (req, res) => {
+
+//     const degrees = await Degree.find();
+
+//     res.render("admin/pages/degrees/index", {
+//         pageTitle: "Thông tin bằng cấp",
+//         degrees: degrees
+//     })
+// }
 
 // [GET] admin/degrees/create
 module.exports.create = async (req, res) => {
@@ -101,7 +164,7 @@ module.exports.edit = async (req, res) => {
                fullName,
                unit,
                program,
-               issueDate: formattedIssueDate.toDate(),
+               issueDate
            });
    
            req.flash("success", "Cập nhật chứng chỉ thành công!");
@@ -135,4 +198,87 @@ module.exports.edit = async (req, res) => {
         res.redirect(`/${systemConfig.prefixAdmin}/degrees`);
     }
 };
+
+
+
+
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const excelJS = require('exceljs');
+
+// Thiết lập cấu hình lưu trữ cho Multer (upload file)
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, '../../public/uploads'));
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + path.extname(file.originalname);
+        cb(null, file.fieldname + '-' + uniqueSuffix);
+    }
+});
+
+const upload = multer({ storage: storage });
+
+// [GET] /admin/degrees/import-database
+module.exports.importDatabase = async (req, res) => {
+    res.render('admin/pages/degrees/importDatabase', {
+        title: 'Import Dữ liệu từ Excel',
+        prefixAdmin: systemConfig.prefixAdmin,
+        previewData: null,
+        previewColumns: ['Degree Code', 'Full Name', 'Unit', 'Program', 'Issue Date'] // Các cột dữ liệu
+    });
+};
+
+// [POST] /admin/degrees/import-database
+module.exports.importDatabasePost = [
+    upload.single('file'), // Xử lý file upload
+    async (req, res) => {
+        try {
+            // Kiểm tra nếu không có file được upload
+            if (!req.file) {
+                req.flash('error', 'Vui lòng chọn một file để import.');
+                return res.redirect(`/${systemConfig.prefixAdmin}/degrees/import-database`);
+            }
+
+            // Đọc file Excel
+            const workbook = new excelJS.Workbook();
+            await workbook.xlsx.readFile(req.file.path);
+            const worksheet = workbook.getWorksheet(1); // Lấy sheet đầu tiên
+            const degrees = [];
+
+            // Duyệt qua từng dòng trong sheet (bỏ qua header)
+            worksheet.eachRow((row, rowIndex) => {
+                if (rowIndex > 1) { // Bỏ qua dòng header (dòng 1)
+                    const degree = {
+                        degreeCode: row.getCell(1).value,
+                        fullName: row.getCell(2).value,
+                        unit: row.getCell(3).value,
+                        program: row.getCell(4).value,
+                        issueDate: new Date(row.getCell(5).value) // Convert to Date
+                    };
+                    degrees.push(degree);
+                }
+            });
+
+            // Ghi dữ liệu vào MongoDB (sử dụng insertMany để chèn nhiều bản ghi)
+            await Degree.insertMany(degrees);
+
+            // Xóa file upload sau khi import xong
+            fs.unlinkSync(req.file.path);
+
+            // Thông báo thành công
+            req.flash('success', 'Dữ liệu đã được import thành công!');
+            res.redirect(`/${systemConfig.prefixAdmin}/degrees`); // Điều hướng về trang danh sách
+
+        } catch (error) {
+            console.error('Lỗi khi import dữ liệu:', error);
+            req.flash('error', 'Đã có lỗi xảy ra, vui lòng thử lại.');
+            res.redirect(`/${systemConfig.prefixAdmin}/degrees/import-database`); // Trở về trang import nếu có lỗi
+        }
+    }
+];
+
+
+
   

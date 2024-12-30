@@ -75,7 +75,6 @@ module.exports.searchDegree = async (req, res) => {
                 $lte: endDate
             };
         }
-        console.log("searchConditions", searchConditions);
 
         // console.log("Kết quả tìm kiếm:", degrees);
 

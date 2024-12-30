@@ -9,8 +9,12 @@ block main
   
   .container.my-3
     .row
+      .col-12.text-center
+        h1.text-uppercase.font-weight-bold Cổng Thông Tin Tra Cứu Chứng Nhận
+
+    .row
       .col-12
-        +box-head("Thông tin bằng cấp")
+        +box-head("Thông tin chứng nhận")
     .row 
       form(action="searchDegree" method="get" class="mb-4")
         .form-group.d-flex
@@ -24,6 +28,10 @@ block main
           label(for="search") Họ tên:
           input.form-control(type="text" name="search" placeholder="Nhập họ tên" value=searchQuery)
         button.btn.btn-primary(type="submit") Tìm kiếm
+
+    .row.mt-3
+      .col-12
+        h4.font-weight-bold.mb-3 Kết quả tra cứu:
 
     .row
       table.table.table-bordered
