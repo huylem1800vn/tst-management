@@ -4,74 +4,82 @@ include ../../mixins/pagination.pug
 include ../../mixins/search.pug
 
 block main
-  +alert-success()
-  +alert-error()
-  
-  .container.my-3
-    .row 
-      a(
-        href=`/${prefixAdmin}/degrees/create`
-        class="btn btn-outline-success btn-lg mr-3"
-      )
-        i(class="fa fa-plus-circle mr-2") 
-        | Thêm mới
-      a(
-        href=`/${prefixAdmin}/degrees/import-database`
-        class="btn btn-outline-primary btn-lg"
-      )
-        i(class="fa fa-file-excel mr-2") 
-        | Thêm dữ liệu từ Excel
+  if(role.permissions.includes("degrees_view"))
+    +alert-success()
+    +alert-error()
+    
+    .container.my-3
+      .row 
+        if(role.permissions.includes("degrees_create"))
+          a(
+            href=`/${prefixAdmin}/degrees/create`
+            class="btn btn-outline-success btn-lg mr-3"
+          )
+            i(class="fa fa-plus-circle mr-2") 
+            | Thêm mới
+        if(role.permissions.includes("degrees_import_database"))
+          a(
+            href=`/${prefixAdmin}/degrees/import-database`
+            class="btn btn-outline-primary btn-lg"
+          )
+            i(class="fa fa-file-excel mr-2") 
+            | Thêm dữ liệu từ Excel
 
-    .row.mt-3
-      form(action=`/${prefixAdmin}/degrees` method="GET" class="mb-4")
-        .form-group.d-flex
-          .mr-3
-            label(for="degreeCode") Số Quyết định:
-            input.form-control(type="text" name="degreeCode" placeholder="Nhập số quyết định" value=degreeCodeQuery)
-          .ml-3
-            label(for="issueDate") Ngày cấp:
-            input.form-control(type="date" name="issueDate" value=issueDateQuery)
-        .form-group
-          label(for="search") Họ tên:
-          input.form-control(type="text" name="search" placeholder="Nhập họ tên" value=searchQuery)
-        button.btn.btn-primary(type="submit") Tìm kiếm
+      .row.mt-3
+        form(action=`/${prefixAdmin}/degrees` method="GET" class="mb-4")
+          .form-group.d-flex
+            .mr-3
+              label(for="degreeCode") Số Quyết định:
+              input.form-control(type="text" name="degreeCode" placeholder="Nhập số quyết định" value=degreeCodeQuery)
+            .ml-3
+              label(for="issueDate") Ngày cấp:
+              input.form-control(type="date" name="issueDate" value=issueDateQuery)
+          .form-group
+            label(for="search") Họ tên:
+            input.form-control(type="text" name="search" placeholder="Nhập họ tên" value=searchQuery)
+          button.btn.btn-primary(type="submit") Tìm kiếm
 
-    .row
-      table.table.table-bordered
-        thead
-          tr
-            th Số Quyết định
-            th Họ tên
-            th Đơn vị
-            th Chương trình / Cuộc thi
-            th Thời gian cấp
-            th Hành động
-        tbody
-          each degree in degrees
+      .row
+        table.table.table-bordered
+          thead
             tr
-              td= degree.degreeCode
-              td= degree.fullName
-              td= degree.unit
-              td= degree.program
-              td= new Date(degree.issueDate).toLocaleDateString('vi-VN')
-              td
-                a(
-                  href=`/${prefixAdmin}/degrees/edit/${degree.id}`
-                  class="btn btn-warning btn-sm"
-                ) Sửa
-                button(
-                  class="btn btn-danger btn-sm ml-1"
-                  button-delete-degree 
-                  data-id=degree.id
-                ) Xóa
+              th Số Quyết định
+              th Họ tên
+              th Đơn vị
+              th Chương trình / Cuộc thi
+              th Thời gian cấp
+              th Hành động
+          tbody
+            each degree in degrees
+              tr
+                td= degree.degreeCode
+                td= degree.fullName
+                td= degree.unit
+                td= degree.program
+                td= new Date(degree.issueDate).toLocaleDateString('vi-VN')
+                td
+                  if(role.permissions.includes("degrees_edit"))
+                    a(
+                      href=`/${prefixAdmin}/degrees/edit/${degree.id}`
+                      class="btn btn-warning btn-sm"
+                    ) Sửa
+                  if(role.permissions.includes("degrees_delete"))
+                    button(
+                      class="btn btn-danger btn-sm ml-1"
+                      button-delete-degree 
+                      data-id=degree.id
+                    ) Xóa
 
-    .row
-      .col-12.d-flex.justify-content-center
-        +pagination(objectPagination)
+      .row
+        .col-12.d-flex.justify-content-center
+          +pagination(objectPagination)
 
-  form(
-      form-delete-item-degree
-      method="POST"
-      action=""
-      data-path=`/${prefixAdmin}/degrees/delete`
-    )
+    form(
+        form-delete-item-degree
+        method="POST"
+        action=""
+        data-path=`/${prefixAdmin}/degrees/delete`
+      )
+
+  else 
+    h1 Không có quyền truy cập

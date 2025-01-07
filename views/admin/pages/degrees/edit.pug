@@ -2,33 +2,37 @@ extends ../../layouts/default.pug
 include ../../mixins/alert.pug
 
 block main
-    +alert-error()
-    +alert-success()
+    if(role.permissions.includes("degrees_edit"))
+        +alert-error()
+        +alert-success()
 
-    .container.my-3
-        h1.text-center.mt-3 Chỉnh sửa chứng chỉ
+        .container.my-3
+            h1.text-center.mt-3 Chỉnh sửa chứng chỉ
 
-        form(action=`/${prefixAdmin}/degrees/edit/${degree.id}?_method=PATCH` method="POST")
-            .form-group
-                label(for="degreeCode") Mã chứng chỉ
-                input#degreeCode.form-control(type="text" name="degreeCode" value=degree.degreeCode required)
+            form(action=`/${prefixAdmin}/degrees/edit/${degree.id}?_method=PATCH` method="POST")
+                .form-group
+                    label(for="degreeCode") Mã chứng chỉ
+                    input#degreeCode.form-control(type="text" name="degreeCode" value=degree.degreeCode required)
 
-            .form-group
-                label(for="fullName") Họ tên
-                input#fullName.form-control(type="text" name="fullName" value=degree.fullName required)
+                .form-group
+                    label(for="fullName") Họ tên
+                    input#fullName.form-control(type="text" name="fullName" value=degree.fullName required)
 
-            .form-group
-                label(for="unit") Đơn vị
-                input#unit.form-control(type="text" name="unit" value=degree.unit required)
+                .form-group
+                    label(for="unit") Đơn vị
+                    input#unit.form-control(type="text" name="unit" value=degree.unit required)
 
-            .form-group
-                label(for="program") Chương trình / Cuộc thi
-                input#program.form-control(type="text" name="program" value=degree.program required)
+                .form-group
+                    label(for="program") Chương trình / Cuộc thi
+                    input#program.form-control(type="text" name="program" value=degree.program required)
 
-            .form-group
-                label(for="issueDate") Thời gian cấp
-                input#issueDate.form-control(type="date" name="issueDate" value=(degree.issueDate ? degree.issueDate.toISOString().split('T')[0] : '') required)
+                .form-group
+                    label(for="issueDate") Thời gian cấp
+                    input#issueDate.form-control(type="date" name="issueDate" value=(degree.issueDate ? degree.issueDate.toISOString().split('T')[0] : '') required)
 
-            .d-flex.justify-content-between.mt-4
-                a.btn.btn-secondary(href=`/${prefixAdmin}/degrees`) Hủy
-                button.btn.btn-primary(type="submit") Lưu
+                .d-flex.justify-content-between.mt-4
+                    a.btn.btn-secondary(href=`/${prefixAdmin}/degrees`) Hủy
+                    button.btn.btn-primary(type="submit") Lưu
+    
+    else 
+        h1 Không có quyền truy cập

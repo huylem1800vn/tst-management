@@ -224,9 +224,7 @@ const upload = multer({ storage: storage });
 module.exports.importDatabase = async (req, res) => {
     res.render('admin/pages/degrees/importDatabase', {
         title: 'Import Dữ liệu từ Excel',
-        prefixAdmin: systemConfig.prefixAdmin,
-        previewData: null,
-        previewColumns: ['Degree Code', 'Full Name', 'Unit', 'Program', 'Issue Date'] // Các cột dữ liệu
+        prefixAdmin: systemConfig.prefixAdmin
     });
 };
 

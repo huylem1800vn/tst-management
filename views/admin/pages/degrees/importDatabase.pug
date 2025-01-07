@@ -2,28 +2,32 @@ extends ../../layouts/default.pug
 include ../../mixins/alert.pug
 
 block main
-  +alert-success()
-  +alert-error()
+  if(role.permissions.includes("degrees_import_database"))
+    +alert-success()
+    +alert-error()
 
-  .container.my-3
-    .row
-      .col-12
-        h2.text-center.my-4 Import Dữ liệu từ Excel
+    .container.my-3
+      .row
+        .col-12
+          h2.text-center.my-4 Import Dữ liệu từ Excel
 
-    .row
-      .col-md-6.offset-md-3
-        form(
-          method="POST"
-          action=`/${prefixAdmin}/degrees/import-database`
-          enctype="multipart/form-data"
-        )
-          .form-group
-            label(for="file") 
-              |  Tải file Excel
-              br
-              |  Chỉ chấp nhận file có định dạng .xlsx, .xls
-              br
-              |  Với định dạng Degree Code, Full Name, Unit, Program, Issue Date (mm/dd/yyyy)
-            input#file.form-control(type="file" name="file" accept=".xlsx,.xls" required)
-          .form-group.text-center.mt-3
-            button.btn.btn-primary.btn-lg(type="submit") Import Dữ liệu
+      .row
+        .col-md-6.offset-md-3
+          form(
+            method="POST"
+            action=`/${prefixAdmin}/degrees/import-database`
+            enctype="multipart/form-data"
+          )
+            .form-group
+              label(for="file") 
+                |  Tải file Excel
+                br
+                |  Chỉ chấp nhận file có định dạng .xlsx, .xls
+                br
+                |  Với định dạng Degree Code, Full Name, Unit, Program, Issue Date (mm/dd/yyyy)
+              input#file.form-control(type="file" name="file" accept=".xlsx,.xls" required)
+            .form-group.text-center.mt-3
+              button.btn.btn-primary.btn-lg(type="submit") Import Dữ liệu
+  
+  else 
+    h1 Không có quyền truy cập
