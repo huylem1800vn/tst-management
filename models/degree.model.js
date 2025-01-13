@@ -5,7 +5,15 @@ const degreeSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
   unit: { type: String, required: true },
   program: { type: String, required: true },
-  issueDate: { type: Date }
+  issueDate: { type: Date },
+  deleted: {
+    type: Boolean,
+    default: false
+  },
+  deletedAt: Date,
+  deletedBy: String,
+  createdBy: String,
+  updatedBy: String,
 }, 
 {
   timestamps: true,

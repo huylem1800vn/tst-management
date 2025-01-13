@@ -1,4 +1,5 @@
 const Degree = require("../../models/degree.model");
+const Account = require("../../models/account.model");
 const paginationHelper = require("../../helpers/pagination.helper");
 const systemConfig = require("../../config/system");
 const moment = require("moment"); // Thư viện để xử lý ngày tháng
@@ -51,6 +52,33 @@ module.exports.index = async (req, res) => {
             .skip(objectPagination.skip)
             .sort({ _id: "desc" });
 
+        // hiển thị người tạo sản phẩm
+        for (const degree of degrees) {
+            const createdBy = await Account.findOne({
+            _id: degree.createdBy,
+            });
+            
+            // if và 2 toán tử 3 ngôi chức năng giống nhau, mình ghi ra để nhớ các trường hợp
+            // if(createdBy) {
+            //   product.createdByFullName = createdBy.fullName;
+            // };
+
+            // product.createdByFullName = createdBy?.fullName;
+
+            createdBy ? degree.createdByFullName = createdBy.fullName : null;
+        }
+        // End hiển thị người tạo sản phẩm
+
+        // hiển thị người cập nhật sản phẩm
+        for (const degree of degrees) {
+            const updatedBy = await Account.findOne({
+            _id: degree.updatedBy,
+            });
+
+            updatedBy ? degree.updatedByFullName = updatedBy.fullName : null;
+        }
+        // End hiển thị người cập nhật phẩm
+
         // Render dữ liệu ra view
         res.render("admin/pages/degrees/index", {
             pageTitle: "Thông tin bằng cấp",
@@ -89,13 +117,15 @@ module.exports.create = async (req, res) => {
 module.exports.createPost = async (req, res) => {
     try {
         const { degreeCode, fullName, unit, program, issueDate } = req.body;
-        console.log(req.body);
 
         // Kiểm tra nếu thiếu trường
         if (!degreeCode || !fullName || !unit || !program || !issueDate) {
             req.flash("error", "Vui lòng nhập đầy đủ thông tin.");
             return res.redirect(`/${systemConfig.prefixAdmin}/degrees/create`);
         }
+
+        // Thêm người tạo
+        const createdBy = res.locals.user.id;
 
         // // Chuyển đổi issueDate từ DD/MM/YYYY sang Date
         // const formattedIssueDate = moment(issueDate, "DD/MM/YYYY").toDate();
@@ -107,7 +137,7 @@ module.exports.createPost = async (req, res) => {
         // }
 
         // Thêm mới vào cơ sở dữ liệu
-        await Degree.create({ degreeCode, fullName, unit, program, issueDate });
+        await Degree.create({ degreeCode, fullName, unit, program, issueDate, createdBy });
         req.flash("success", "Tạo bằng cấp thành công!");
         res.redirect(`/${systemConfig.prefixAdmin}/degrees`);
     } catch (error) {
@@ -140,23 +170,25 @@ module.exports.edit = async (req, res) => {
    // [PATCH] /admin/degrees/edit/:id
    module.exports.editPatch = async (req, res) => {
        try {
-           console.log(req.body);
-           const { degreeCode, fullName, unit, program, issueDate } = req.body;
-           const id = req.params.id;
+            const { degreeCode, fullName, unit, program, issueDate, } = req.body;
+            const id = req.params.id;
    
-           // Kiểm tra nếu thiếu bất kỳ trường nào
-           if (!degreeCode || !fullName || !unit || !program || !issueDate) {
-               req.flash("error", "Vui lòng nhập đầy đủ thông tin.");
-               return res.redirect(`/${systemConfig.prefixAdmin}/degrees/edit/${id}`);
-           }
+            // Kiểm tra nếu thiếu bất kỳ trường nào
+            if (!degreeCode || !fullName || !unit || !program || !issueDate) {
+                req.flash("error", "Vui lòng nhập đầy đủ thông tin.");
+                return res.redirect(`/${systemConfig.prefixAdmin}/degrees/edit/${id}`);
+            }
+
+            // Thêm người sửa
+            const updatedBy = res.locals.user.id;
    
            // Chuyển đổi issueDate từ DD/MM/YYYY sang Date
-        //    đây là đoạn code dùng để chuyển đổi ngày tháng từ chuỗi sang kiểu Date khi nhập chuỗi từ bên phía front
-        //    const formattedIssueDate = moment(issueDate, "DD/MM/YYYY", true);
-        //    if (!formattedIssueDate.isValid()) {
-        //        req.flash("error", "Ngày cấp không hợp lệ. Định dạng phải là DD/MM/YYYY.");
-        //        return res.redirect(`/${systemConfig.prefixAdmin}/degrees/edit/${id}`);
-        //    }
+            //    đây là đoạn code dùng để chuyển đổi ngày tháng từ chuỗi sang kiểu Date khi nhập chuỗi từ bên phía front
+            //    const formattedIssueDate = moment(issueDate, "DD/MM/YYYY", true);
+            //    if (!formattedIssueDate.isValid()) {
+            //        req.flash("error", "Ngày cấp không hợp lệ. Định dạng phải là DD/MM/YYYY.");
+            //        return res.redirect(`/${systemConfig.prefixAdmin}/degrees/edit/${id}`);
+            //    }
    
            // Cập nhật dữ liệu trong cơ sở dữ liệu
            await Degree.findByIdAndUpdate(id, {
@@ -164,7 +196,8 @@ module.exports.edit = async (req, res) => {
                fullName,
                unit,
                program,
-               issueDate
+               issueDate,
+               updatedBy
            });
    
            req.flash("success", "Cập nhật chứng chỉ thành công!");
@@ -206,6 +239,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const excelJS = require('exceljs');
+
 
 // Thiết lập cấu hình lưu trữ cho Multer (upload file)
 const storage = multer.diskStorage({
@@ -253,12 +287,13 @@ module.exports.importDatabasePost = [
                         fullName: row.getCell(2).value,
                         unit: row.getCell(3).value,
                         program: row.getCell(4).value,
-                        issueDate: new Date(row.getCell(5).value) // Convert to Date
+                        issueDate: new Date(row.getCell(5).value), // Convert to Date
+                        createdBy: res.locals.user.id
                     };
                     degrees.push(degree);
                 }
             });
-
+            
             // Ghi dữ liệu vào MongoDB (sử dụng insertMany để chèn nhiều bản ghi)
             await Degree.insertMany(degrees);
 

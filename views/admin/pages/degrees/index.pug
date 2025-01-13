@@ -48,7 +48,10 @@ block main
               th Đơn vị
               th Chương trình / Cuộc thi
               th Thời gian cấp
+              th Tạo bởi
+              th Cập nhật bởi
               th Hành động
+              
           tbody
             each degree in degrees
               tr
@@ -57,6 +60,12 @@ block main
                 td= degree.unit
                 td= degree.program
                 td= new Date(degree.issueDate).toLocaleDateString('vi-VN')
+                td
+                  div #{degree.createdByFullName}
+                  div #{moment(degree.createdAt).format("DD/MM/YYYY - HH:mm")}
+                td
+                  div #{degree.updatedByFullName}
+                  div #{moment(degree.updatedAt).format("DD/MM/YYYY - HH:mm")}
                 td
                   if(role.permissions.includes("degrees_edit"))
                     a(
@@ -69,6 +78,7 @@ block main
                       button-delete-degree 
                       data-id=degree.id
                     ) Xóa
+                
 
       .row
         .col-12.d-flex.justify-content-center
