@@ -27,9 +27,7 @@ module.exports.index = async (req, res) => {
       pageTitle: "Tổng quan",
       totalAdmins,
       activeAdmins,
-      inactiveAdmins,
-      user: res.locals.user, // User từ middleware
-      role: res.locals.role, // Role từ middleware
+      inactiveAdmins
     });
   } catch (error) {
     console.error("Lỗi khi lấy thông tin tổng quan:", error);
