@@ -13,4 +13,15 @@ header.header
           ul.ml-auto
             li
               a(href="/") Trang chủ
+            if(user)
+              li 
+                a(href="/user/info") #{user.fullName}
+              li 
+                a(href="/user/logout") Đăng Xuất
+            else 
+              li 
+                a(href="/user/register") Đăng ký
+              li 
+                a(href="/user/login") Đăng nhập
+                  i(class="fa-solid fa-right-to-bracket")
             

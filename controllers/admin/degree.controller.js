@@ -230,10 +230,7 @@ module.exports.edit = async (req, res) => {
         req.flash('error', 'Xóa chứng chỉ thất bại');
         res.redirect(`/${systemConfig.prefixAdmin}/degrees`);
     }
-};
-
-
-
+}
 
 const multer = require('multer');
 const path = require('path');

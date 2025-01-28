@@ -12,7 +12,6 @@
 /* Header */
 .header {
   border-bottom: 1px solid #ddd;
-  padding: 10px 0;
 }
 
 /* Logo style */
@@ -49,22 +48,6 @@
   transform: scale(1.1); /* Phóng to chữ khi di chuột */
 }
 
-/* Search form */
-.header form .form-control {
-  border-radius: 50px; /* Bo góc */
-  border: 1px solid #ccc;
-  padding: 5px 15px;
-  margin-right: 10px;
-}
-
-.header form .btn {
-  border-radius: 50px; /* Bo góc */
-  padding: 5px 15px;
-  background: #f0f0f0;
-  color: #4a4a4a;
-  border: 1px solid #ccc;
-}
-
 .header form .btn:hover {
   background: #4a4a4a;
   color: #f0f0f0;
@@ -91,12 +74,6 @@
   visibility: hidden;
   transform: translateY(-20px);
   transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.sub-menu ul li {
-  padding: 10px;
-  border-bottom: 1px solid #444444; /* Đổi màu viền thành màu trầm hơn */
-  transition: background 0.3s ease;
 }
 
 .sub-menu ul li:last-child {
@@ -523,7 +500,17 @@ to {
 .footer-custom {
   background-color: #215578;
   color: #ffffff; /* Màu chữ (nếu cần) để dễ đọc trên nền xanh */
-  padding: 15px;  /* Khoảng cách bên trong footer */
+  padding: 15px;  /*Khoảng cách bên trong footer */
   text-align: center; /* Căn giữa nội dung (nếu muốn) */
 }
 /* End Footer custom */
+.header{
+  min-height: 10vh;
+}
+
+.main.main-content {
+  min-height: 80vh;
+  margin-top: -2px;
+}
+
+

@@ -91,8 +91,6 @@ if(checkboxMulti) {
                 input.checked = false;
             })
         } 
-        
-        
     })
 
     // khi tick đầy các ô ở dưới thì ô check all cũng được tick
@@ -185,7 +183,6 @@ if(listButtonDelete.length > 0) {
         
                 formDeleteItem.submit();
             }
-            
         });
     });
 }
@@ -489,7 +486,6 @@ if(dataRecords) {
 
 // Button delete Role
 function deleteRole(roleId) {
-    console.log("Clicked delete for role:", roleId);
     if (confirm("Bạn có chắc chắn muốn xóa nhóm quyền này không?")) {
       fetch(`/${prefixAdmin}/roles/delete/${roleId}`, {
         method: 'DELETE',

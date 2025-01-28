@@ -1,4 +1,3 @@
-const Cart = require("../../models/cart.model");
 const User = require("../../models/user.model");
 
 module.exports.infoUser = async (req, res, next) => {
