@@ -1,0 +1,81 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+
+block main
+  +alert-success()
+  +alert-error()
+
+  .container.my-5
+    .row.justify-content-center
+      .col-md-8
+        h1.text-center.mb-4 Cập nhật Thông tin Tài khoản
+
+        // Form cập nhật thông tin (sử dụng method override: PATCH)
+        form(action="/user/updateInfo?_method=PATCH" method="POST")
+          .form-group
+            label(for="fullName") Họ tên:
+            input.form-control(
+              type="text", 
+              id="fullName", 
+              name="fullName", 
+              value=infoUser.fullName, 
+              required
+            )
+
+          .form-group
+            label Email:
+            input.form-control(
+              type="email", 
+              value=infoUser.email, 
+              disabled
+            )
+
+          .form-group
+            label(for="dateOfBirth") Ngày tháng năm sinh:
+            - var dob = "";
+            if (infoUser.dateOfBirth)
+              - dob = new Date(infoUser.dateOfBirth).toISOString().slice(0, 10);
+            input.form-control(
+              type="date", 
+              id="dateOfBirth", 
+              name="dateOfBirth", 
+              value=dob
+            )
+
+          .form-group
+            label(for="education") Học vấn:
+            input.form-control(
+              type="text", 
+              id="education", 
+              name="education", 
+              value=infoUser.education
+            )
+
+          .form-group
+            label(for="organization") Đơn vị công tác:
+            input.form-control(
+              type="text", 
+              id="organization", 
+              name="organization", 
+              value=infoUser.organization
+            )
+
+          .form-group
+            label(for="skills") Kỹ năng chuyên môn:
+            input.form-control(
+              type="text", 
+              id="skills", 
+              name="skills", 
+              value=infoUser.skills
+            )
+
+          .form-group
+            label(for="networks") Mạng lưới kết nối:
+            input.form-control(
+              type="text", 
+              id="networks", 
+              name="networks", 
+              value=infoUser.networks
+            )
+
+          button.btn.btn-primary.btn-block(type="submit") Cập nhật

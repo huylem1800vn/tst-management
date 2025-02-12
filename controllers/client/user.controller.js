@@ -231,3 +231,99 @@ module.exports.info = async (req, res) => {
         infoUser: infoUser,
     })
 }
+
+// [GET] /user/updateInfo
+module.exports.updateInfo = async (req, res) => {
+    try {
+      const tokenUser = req.cookies.tokenUser;
+      if (!tokenUser) {
+        req.flash("error", "Bạn chưa đăng nhập!");
+        return res.redirect("/user/login");
+      }
+  
+      // Tìm thông tin người dùng dựa trên tokenUser
+      const infoUser = await User.findOne({
+        tokenUser: tokenUser,
+        deleted: false,
+      }).select("-password");
+  
+      if (!infoUser) {
+        req.flash("error", "Không tìm thấy thông tin người dùng!");
+        return res.redirect("/user/login");
+      }
+  
+      // Render trang cập nhật thông tin với dữ liệu hiện có
+      res.render("client/pages/user/updateInfo", {
+        pageTitle: "Cập nhật tài khoản",
+        infoUser: infoUser,
+      });
+    } catch (error) {
+      console.error("Lỗi khi lấy thông tin người dùng:", error);
+      req.flash("error", "Có lỗi xảy ra, vui lòng thử lại sau.");
+      res.redirect("back");
+    }
+  };
+
+// [PATCH] /user/updateInfo
+module.exports.updateInfoPatch = async (req, res) => {
+    try {
+      const tokenUser = req.cookies.tokenUser;
+      if (!tokenUser) {
+        req.flash("error", "Bạn chưa đăng nhập!");
+        return res.redirect("/user/login");
+      }
+  
+      // Lấy dữ liệu cập nhật từ form
+      const { fullName, dateOfBirth, education, organization, skills, networks } = req.body;
+  
+      // Kiểm tra nếu fullName không được để trống
+      if (!fullName) {
+        req.flash("error", "Họ và tên không được để trống.");
+        return res.redirect("back");
+      }
+  
+      // Chuyển đổi dateOfBirth nếu có (định dạng phải là YYYY-MM-DD)
+      let dob = null;
+      if (dateOfBirth) {
+        dob = new Date(dateOfBirth);
+        if (isNaN(dob.getTime())) {
+          req.flash("error", "Ngày tháng năm sinh không hợp lệ.");
+          return res.redirect("back");
+        }
+      }
+  
+      // Nếu trường skills được gửi dưới dạng chuỗi, bạn có thể chuyển đổi thành mảng nếu cần, ví dụ:
+      // const skillsArray = skills ? skills.split(",").map(item => item.trim()) : [];
+      // Tuy nhiên, nếu bạn muốn lưu trực tiếp như chuỗi, giữ nguyên:
+      
+      // Tạo object cập nhật với các trường mới
+      const updateData = {
+        fullName,
+        dateOfBirth: dob,
+        education,
+        organization,
+        skills,    // nếu cần chuyển đổi thành mảng: skills: skillsArray
+        networks
+      };
+  
+      // Cập nhật thông tin người dùng dựa trên tokenUser và trạng thái chưa bị xóa
+      const updatedUser = await User.findOneAndUpdate(
+        { tokenUser: tokenUser, deleted: false },
+        updateData,
+        { new: true }
+      ).select("-password");
+  
+      if (!updatedUser) {
+        req.flash("error", "Cập nhật thông tin thất bại.");
+        return res.redirect("back");
+      }
+  
+      req.flash("success", "Cập nhật thông tin thành công!");
+      res.redirect("/user/updateInfo");
+    } catch (error) {
+      console.error("Lỗi cập nhật thông tin:", error);
+      req.flash("error", "Có lỗi xảy ra, vui lòng thử lại sau.");
+      res.redirect("back");
+    }
+  };
+  

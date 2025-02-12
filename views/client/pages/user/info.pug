@@ -1,7 +1,11 @@
 extends ../../layouts/default.pug
 include ../../mixins/box-head.pug
+include ../../mixins/alert.pug
 
 block main
+  +alert-error()
+  +alert-success()
+
   .container.my-3
     .row
       .col-12
@@ -17,4 +21,28 @@ block main
                 strong Email:
                 | #{infoUser.email} 
               .col-md-6
-                button.btn.btn-primary Thêm ngày tháng năm sinh
+                - var dob = new Date(infoUser.dateOfBirth);
+                - var formattedDOB = dob.toLocaleDateString('vi-VN');
+                strong Ngày tháng năm sinh:
+                | #{formattedDOB}
+              .col-md-6
+                strong Học vấn:
+                | #{infoUser.education}
+              .col-md-6
+                strong Đơn vị công tác:
+                | #{infoUser.organization}
+              .col-md-6
+                strong Kỹ năng chuyên môn:
+                | #{infoUser.skills}
+              .col-md-6
+                strong Mạng lưới kết nối:
+                | #{infoUser.networks}
+            form(
+              action="/user/updateInfo"
+              method="GET"
+            )
+              div(class="form-group")
+                button(
+                  type="submit"
+                  class="btn btn-primary btn-block"
+                ) Cập nhật thông tin
